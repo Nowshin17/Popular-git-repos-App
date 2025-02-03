@@ -16,7 +16,7 @@ class DetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.grey.shade300,
       appBar: AppBar(title: Text(repo.name)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -29,7 +29,7 @@ class DetailsPage extends StatelessWidget {
                 backgroundImage: NetworkImage(repo.ownerAvatarUrl),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text("Owner: ${repo.ownerName}", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             Text("Description: ${repo.description}", style: TextStyle(fontSize: 16)),
             Text("Last Updated: ${formatDateTime(repo.updatedAt)}", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
