@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:popular/screens/Home_screen.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -34,6 +33,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return const HomeScreen();
+    return HomeScreen();
   }
 }
