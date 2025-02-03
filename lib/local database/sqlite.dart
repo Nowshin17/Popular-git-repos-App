@@ -1,8 +1,9 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+
 import '../models/repo_model.dart';
 
-class DatabaseHelper {
+class DatabaseData {
   static Database? _database;
 
   Future<Database> get database async {
@@ -35,9 +36,24 @@ class DatabaseHelper {
   Future<void> insertRepos(List<GitRepo> repos) async {
     final db = await database;
     for (var repo in repos) {
-      await db.insert('repos', repo.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+      await db.insert('repos', repo.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
     }
   }
 
-
+  Future<List<GitRepo>> getRepos() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('repos');
+    return List.generate(maps.length, (i) {
+      return GitRepo(
+        name: maps[i]['name'],
+        description: maps[i]['description'],
+        url: maps[i]['url'],
+        stars: maps[i]['stars'],
+        ownerName: maps[i]['owner_name'],
+        ownerAvatarUrl: maps[i]['owner_avatar_url'],
+        updatedAt: maps[i]['updated_at'],
+      );
+    });
+  }
 }

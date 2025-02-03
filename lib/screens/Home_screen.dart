@@ -3,6 +3,7 @@ import '../local database/sqlite.dart';
 import '../models/repo_model.dart';
 import '../service_page/service.dart';
 
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -12,6 +13,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<GitRepo> repos = [];
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -19,39 +22,50 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> loadRepos() async {
-    final dbHelper = DatabaseHelper();
-    final apiService = GitHubService();
+    final dbData = DatabaseData();
+    final apiService = DataFromAPI();
 
     try {
-      repos = await apiService.fetchGitRepos();
-      print(repos);
-     await dbHelper.insertRepos(repos);
+      repos = await apiService.fetchGitReposFromAPI();
+      await dbData.insertRepos(repos);
     } catch (e) {
-
+      print("data from database");
+      repos = await dbData.getRepos();
     }
 
+    setState(() {
+      _isLoading = false;
+    });
   }
-
-  // Future<void> _loadRepos() async {
-  //   try {
-  //     List<GitRepo> repos = await _githubService.fetchGitRepos();
-  //     await _dbHelper.insertRepos(repos);
-  //     setState(() => _repos = repos);
-  //   } catch (e) {
-  //     // If API fails, load from local DB
-  //     // List<GitRepo> repos = await _dbHelper.getRepos();
-  //     // setState(() => _repos = repos);
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("POPULAR GIT REPOSITORIES"),
-          centerTitle: true,
-          // backgroundColor:Colors.grey,
-        ),
-        body: SingleChildScrollView());
+      appBar: AppBar(
+        title: const Text("POPULAR GIT REPOSITORIES"),
+        centerTitle: true,
+        // backgroundColor:Colors.grey,
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: repos.length,
+              itemBuilder: (context, index) {
+                final repo = repos[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(repo.ownerAvatarUrl),
+                    //onBackgroundImageError: (_, __) => AssetImage('assets/default_avatar.png'),
+                  ),
+                  title: Text(repo.name),
+                  subtitle: Text(repo.description),
+                  trailing: Text("⭐ ${repo.stars}"),
+                  onTap: () {
+
+                  },
+                );
+              },
+            ),
+    );
   }
 }

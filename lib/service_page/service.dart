@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import '../models/repo_model.dart';
 
-class GitHubService {
-  static const String baseUrl = "https://api.github.com/search/repositories?q=Android&sort=stars";
+class DataFromAPI {
+  static const String baseUrl =
+      "https://api.github.com/search/repositories?q=Android&sort=stars";
 
-  Future<List<GitRepo>> fetchGitRepos() async {
+  Future<List<GitRepo>> fetchGitReposFromAPI() async {
     final response = await http.get(Uri.parse(baseUrl));
 
     if (response.statusCode == 200) {
