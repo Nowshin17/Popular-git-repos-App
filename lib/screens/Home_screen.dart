@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final apiService = DataFromAPI();
 
     try {
+      print("data from api");
       repos = await apiService.fetchGitReposFromAPI();
       await dbData.insertRepos(repos);
     } catch (e) {
@@ -44,21 +45,26 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("POPULAR GIT REPOSITORIES"),
+        title: const Text("POPULAR GIT REPOSITORIES",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent,
+
+        ),),
         centerTitle: true,
-        // backgroundColor:Colors.grey,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           :
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: ListView.builder(
-          itemCount: repos.length,
-          itemBuilder: (context, index) {
-            final repo = repos[index];
-            return GitRepoTile(repo: repo);
-          },
+      RefreshIndicator(
+
+        onRefresh: loadRepos,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: ListView.builder(
+            itemCount: repos.length,
+            itemBuilder: (context, index) {
+              final repo = repos[index];
+              return GitRepoTile(repo: repo);
+            },
+          ),
         ),
       ),
       // ListView.builder(
@@ -124,7 +130,7 @@ class GitRepoTile extends StatelessWidget {
                   CircleAvatar(
                     radius: 18,
                     backgroundImage: NetworkImage(repo.ownerAvatarUrl),
-                    onBackgroundImageError: (_, __) => AssetImage('assets/github-pic.webp'),
+                    onBackgroundImageError: (_, __) => const AssetImage('assets/gitIMG.png'),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -141,7 +147,6 @@ class GitRepoTile extends StatelessWidget {
               ),
 
               const SizedBox(height: 8),
-
               if (repo.description.isNotEmpty)
                 Text(
                   repo.description,
