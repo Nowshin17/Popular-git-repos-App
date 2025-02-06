@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/repo_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailsPage extends StatelessWidget {
   final GitRepo repo;
 
   DetailsPage({required this.repo});
 
-  /// 🕒 Formats date & time
   String formatDateTime(String dateTimeString) {
     DateTime dateTime = DateTime.parse(dateTimeString);
-    return DateFormat('MMM dd, yyyy • HH:mm').format(dateTime);
+    return DateFormat('MMM dd, yy • HH:mm').format(dateTime);
+  }
+
+  void _launchURL() async {
+    final Uri url = Uri.parse("https://github.com");
+    if (!await launch(url.toString())) {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -18,7 +25,8 @@ class DetailsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
-        title: Text(repo.name, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(repo.name,
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -26,15 +34,12 @@ class DetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            /// 🟢 Owner Profile Picture
             CircleAvatar(
               radius: 50,
               backgroundImage: NetworkImage(repo.ownerAvatarUrl),
               backgroundColor: Colors.transparent,
             ),
             const SizedBox(height: 12),
-
-            /// 🔹 Owner Name
             Text(
               repo.ownerName,
               style: TextStyle(
@@ -43,8 +48,6 @@ class DetailsPage extends StatelessWidget {
                 color: Colors.blueGrey.shade900,
               ),
             ),
-
-            /// 📌 Repository Information Card
             const SizedBox(height: 16),
             Card(
               shape: RoundedRectangleBorder(
@@ -56,10 +59,10 @@ class DetailsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// 🏷 Repo Name
                     Row(
                       children: [
-                        Icon(Icons.book, color: Colors.blueGrey, size: 20),
+                        const Icon(Icons.book,
+                            color: Colors.blueGrey, size: 20),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
@@ -74,31 +77,30 @@ class DetailsPage extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 12),
-
-                    /// 📝 Description
                     if (repo.description.isNotEmpty)
                       Text(
                         repo.description,
-                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                        style: const TextStyle(
+                            fontSize: 16, color: Colors.black87),
                       )
                     else
-                      Text(
+                      const Text(
                         "No description available.",
-                        style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.grey),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.grey),
                       ),
-
                     const SizedBox(height: 10),
-                    Divider(),
-
-                    /// ⭐ Stars & Last Updated
+                    const Divider(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.star, color: Colors.amber, size: 20),
+                            const Icon(Icons.star,
+                                color: Colors.amber, size: 20),
                             const SizedBox(width: 5),
                             Text(
                               "${repo.stars}",
@@ -112,11 +114,14 @@ class DetailsPage extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            Icon(Icons.access_time, color: Colors.grey, size: 20),
+                            const Icon(Icons.access_time,
+                                color: Colors.grey, size: 20),
                             const SizedBox(width: 5),
                             Text(
                               formatDateTime(repo.updatedAt),
-                              style: TextStyle(fontSize: 14, color: Colors.blueGrey.shade700),
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.blueGrey.shade700),
                             ),
                           ],
                         ),
@@ -126,15 +131,9 @@ class DetailsPage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            /// 🌍 Open Repository Button
             ElevatedButton.icon(
-              onPressed: () {
-                // Open repository link
-                print("Opening Repo: ${repo.url}");
-              },
+              onPressed: _launchURL,
               icon: Icon(Icons.open_in_new),
               label: Text("View Repository"),
               style: ElevatedButton.styleFrom(
