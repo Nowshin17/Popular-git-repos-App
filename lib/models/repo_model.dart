@@ -6,6 +6,9 @@ class GitRepo {
   final String ownerName;
   final String ownerAvatarUrl;
   final String updatedAt;
+  final String keyword;
+  final int pageno;
+  final int totalpage;
 
   GitRepo({
     required this.name,
@@ -15,6 +18,9 @@ class GitRepo {
     required this.ownerName,
     required this.ownerAvatarUrl,
     required this.updatedAt,
+    required this.keyword,
+    required this.pageno,
+    required this.totalpage,
   });
 
   factory GitRepo.fromJson(Map<String, dynamic> json) {
@@ -26,6 +32,9 @@ class GitRepo {
       ownerName: json['owner']['login'],
       ownerAvatarUrl: json['owner']['avatar_url'],
       updatedAt: json['updated_at'],
+      keyword: json['keyword'] ?? '',
+      pageno: json['pageno'] ?? 1,
+      totalpage: json['totalpage'] ?? 1,
     );
   }
 
@@ -38,6 +47,9 @@ class GitRepo {
       'owner_name': ownerName,
       'owner_avatar_url': ownerAvatarUrl,
       'updated_at': updatedAt,
+      'keyword': keyword,
+      'pageno': pageno,
+      'totalpage': totalpage,
     };
   }
 }
