@@ -14,7 +14,7 @@ class DetailsPage extends StatelessWidget {
   }
 
   void _launchURL() async {
-    final Uri url = Uri.parse("https://github.com");
+    final Uri url = Uri.parse(repo.url);
     if (!await launch(url.toString())) {
       throw 'Could not launch $url';
     }

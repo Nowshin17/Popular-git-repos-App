@@ -37,17 +37,6 @@ class GitRepoTile extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // CircleAvatar(
-                  //   radius: 18,
-                  //  backgroundColor: Colors.grey.shade200, // Optional background color
-                  //   backgroundImage: NetworkImage(repo.ownerAvatarUrl),
-                  //   child: Image.network(
-                  //     repo.ownerAvatarUrl, fit: BoxFit.cover,
-                  //     errorBuilder: (context, error, stackTrace) {
-                  //       return Image.asset('assets/gitIMG.png');
-                  //     },
-                  //   ),
-                  // ),
                   CircleAvatar(
                     radius: 18,
                     backgroundImage: NetworkImage(repo.ownerAvatarUrl),
@@ -78,7 +67,7 @@ class GitRepoTile extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

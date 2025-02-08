@@ -41,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
       repos = response['repos'];
       totalPages = response['totalPages'];
 
-      // Add keyword, page number, and total pages to each repo before inserting into DB
       repos = repos
           .map((repo) => GitRepo(
                 name: repo.name,
@@ -66,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (repos.isNotEmpty) {
         totalPages =
-            repos.first.totalpage; // Retrieve total pages from stored data
+            repos.first.totalpage;
       }
     }
 
