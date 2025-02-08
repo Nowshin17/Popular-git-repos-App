@@ -1,16 +1,19 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../constants/urls.dart';
 import '../models/repo_model.dart';
 
 class DataFromAPI {
-  static const String baseUrl = baseURL;
+  static const String defaultQuery = "Android";
+  String query = defaultQuery;
 
-  Future<Map<String, dynamic>> fetchGitReposFromAPI({int page = 1, int perPage = 30}) async {
-    final response = await http.get(Uri.parse("$baseUrl&page=$page"));
+  Future<Map<String, dynamic>> fetchGitReposFromAPI(
+      {String query = "Android", int page = 1, int perPage = 30}) async {
+    String apiUrl =
+        "https://api.github.com/search/repositories?q=$query&sort=stars&page=$page";
+
+    final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
-      print("Response: 200");
       final data = json.decode(response.body);
       final List<dynamic> items = data['items'];
       final repos = items.map((repo) => GitRepo.fromJson(repo)).toList();
@@ -22,6 +25,10 @@ class DataFromAPI {
     } else {
       throw Exception("Failed to fetch repositories");
     }
+  }
+
+  void updateQuery(String newQuery) {
+    query = newQuery.isNotEmpty ? newQuery : defaultQuery;
   }
 
   int _parseLastPage(String? linkHeader) {
