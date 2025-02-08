@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<GitRepo> repos = [];
   bool _isLoading = true;
   int currentPage = 1;
-  int totalPages = 10; // Assume 10 pages for now; update dynamically later
+  int totalPages = 10;
   int perPage = 30;
 
   String searchQuery = "Android";
@@ -37,13 +37,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
       final response = await apiService.fetchGitReposFromAPI(
           query: searchQuery, page: currentPage, perPage: perPage);
+
       repos = response['repos'];
       totalPages = response['totalPages'];
 
+      // Add keyword, page number, and total pages to each repo before inserting into DB
+      repos = repos
+          .map((repo) => GitRepo(
+                name: repo.name,
+                description: repo.description,
+                url: repo.url,
+                stars: repo.stars,
+                ownerName: repo.ownerName,
+                ownerAvatarUrl: repo.ownerAvatarUrl,
+                updatedAt: repo.updatedAt,
+                keyword: searchQuery,
+                pageno: currentPage,
+                totalpage: totalPages,
+              ))
+          .toList();
+
       await dbData.insertRepos(repos);
     } catch (e) {
-      print("Fetching data from database");
-      repos = await dbData.getRepos();
+      print(
+          "Fetching data from database for '$searchQuery' on page $currentPage");
+
+      repos = await dbData.getReposByKeywordAndPage(searchQuery, currentPage);
+
+      if (repos.isNotEmpty) {
+        totalPages =
+            repos.first.totalpage; // Retrieve total pages from stored data
+      }
     }
 
     setState(() {
@@ -104,12 +128,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                          width:
-                              10), // Adds space between text field and button
+                      const SizedBox(width: 10),
                       ElevatedButton(
-                        onPressed:
-                            _onSearchSubmitted, // Calls the function when clicked
+                        onPressed: _onSearchSubmitted,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
                           padding: const EdgeInsets.symmetric(
@@ -123,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  "List of $searchQuery",
+                  "List for '$searchQuery' keyword",
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.blueAccent,
@@ -157,32 +178,21 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (currentPage > 2) _pageButton(1),
-
           if (currentPage > 3)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 4),
               child: Text("..."),
             ),
-
           if (currentPage > 1) _pageButton(currentPage - 1),
-
           _pageButton(currentPage, isSelected: true),
-
           if (currentPage < totalPages) _pageButton(currentPage + 1),
-
           if (currentPage < totalPages - 2)
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 4),
               child: Text("..."),
             ),
-
-          if (currentPage == totalPages - 1 ||
-              currentPage == totalPages - 2) // Show lastPage - 1 properly
+          if (currentPage == totalPages - 1 || currentPage == totalPages - 2)
             _pageButton(totalPages - 1),
-
-          // if (currentPage < totalPages - 1)
-          //   _pageButton(totalPages),
-
           if (currentPage < totalPages) _pageButton(totalPages)
         ],
       ),
